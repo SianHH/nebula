@@ -1,0 +1,80 @@
+pki:
+  ca: /etc/nebula/ca.crt
+  cert: /etc/nebula/host.crt
+  key: /etc/nebula/host.key
+
+static_host_map:
+  "192.168.100.1": [ "100.64.22.11:4242" ]
+
+lighthouse:
+  am_lighthouse: false
+  serve_dns: false
+  dns:
+    host: 0.0.0.0
+    port: 53
+  interval: 60
+  hosts:
+    - "192.168.100.1"
+
+listen:
+  # To listen on both any ipv4 and ipv6 use "::"
+  host: 0.0.0.0
+  port: 4242
+
+
+punchy:
+  punch: true
+  respond: true
+  delay: 1s
+  respond_delay: 5s
+
+relay:
+  relays:
+    - 192.168.100.1
+  am_relay: false
+  # true表示允许中继
+  use_relays: true
+
+tun:
+  disabled: false
+  dev: nebula1
+  drop_local_broadcast: false
+  drop_multicast: false
+  tx_queue: 500
+  mtu: 1300
+
+  unsafe_routes:
+    - route: 172.16.1.0/24
+      via: 192.168.100.99
+      mtu: 1300
+      metric: 100
+      install: true
+
+firewall:
+  outbound_action: drop
+  inbound_action: drop
+
+  outbound:
+    - port: any
+      proto: any
+      host: any
+
+  inbound:
+    # Allow icmp between any nebula hosts
+    - port: any
+      proto: icmp
+      host: any
+
+    # Allow tcp/443 from any host with BOTH laptop and home group
+    - port: 443
+      proto: tcp
+      groups:
+        - laptop
+        - home
+
+    # Expose a subnet (unsafe route) to hosts with the group remote_client
+    # This example assume you have a subnet of 192.168.100.1/24 or larger encoded in the certificate
+    - port: 8080
+      proto: tcp
+      group: remote_client
+      local_cidr: 192.168.100.1/24
