@@ -15,6 +15,7 @@ type Config struct {
 	StaticHostMap map[string][]string `yaml:"static_host_map,omitempty"`
 	Lighthouse    ConfigLighthouse    `yaml:"lighthouse,omitempty"`
 	Listen        ConfigListen        `yaml:"listen,omitempty"`
+	Tun           ConfigTun           `yaml:"tun,omitempty"`
 	Punchy        ConfigPunchy        `yaml:"punchy,omitempty"`
 	Relay         ConfigRelay         `yaml:"relay,omitempty"`
 	Firewall      ConfigFirewall      `yaml:"firewall,omitempty"`
@@ -57,6 +58,24 @@ type ConfigRelay struct {
 	UseRelays bool     `yaml:"use_relays,omitempty"`
 }
 
+type ConfigTun struct {
+	Disabled           bool                   `yaml:"disabled,omitempty"`
+	Dev                string                 `yaml:"dev,omitempty"`
+	DropLocalBroadcast bool                   `yaml:"drop_local_broadcast,omitempty"`
+	DropMulticast      bool                   `yaml:"drop_multicast,omitempty"`
+	TxQueue            int                    `yaml:"tx_queue,omitempty"`
+	MTU                int                    `yaml:"mtu,omitempty"`
+	UnsafeRoutes       []ConfigTunUnsafeRoute `yaml:"unsafe_routes,omitempty"`
+}
+
+type ConfigTunUnsafeRoute struct {
+	Route   string `yaml:"route,omitempty"`
+	Via     string `yaml:"via,omitempty"`
+	MTU     int    `yaml:"mtu,omitempty"`
+	Metric  int    `yaml:"metric,omitempty"`
+	Install bool   `yaml:"install,omitempty"`
+}
+
 type ConfigFirewall struct {
 	OutboundAction string                `json:"outbound_action,omitempty"`
 	InboundAction  string                `json:"inbound_action,omitempty"`
@@ -77,7 +96,7 @@ func NewCtrl(cfg Config) (*nebula.Control, error) {
 	l := logrus.New()
 	l.Out = os.Stdout
 	marshal, _ := yaml.Marshal(cfg)
-	fmt.Println(string(marshal))
+	//fmt.Println(string(marshal))
 	c := config.NewC(l)
 	err := c.LoadString(string(marshal))
 	if err != nil {
