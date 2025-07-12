@@ -61,6 +61,7 @@ type ConfigRelay struct {
 type ConfigTun struct {
 	Disabled           bool                   `yaml:"disabled,omitempty"`
 	Dev                string                 `yaml:"dev,omitempty"`
+	Cidr               string                 `yaml:"cidr,omitempty"`
 	DropLocalBroadcast bool                   `yaml:"drop_local_broadcast,omitempty"`
 	DropMulticast      bool                   `yaml:"drop_multicast,omitempty"`
 	TxQueue            int                    `yaml:"tx_queue,omitempty"`
